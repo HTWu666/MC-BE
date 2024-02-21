@@ -7,6 +7,7 @@ task_bp = Blueprint("task_bp", __name__)
 
 # mock a table in database
 tasks_list = []
+last_task_id = 0  # recording the last task id
 
 
 @task_bp.route("/v1/tasks")
@@ -22,15 +23,14 @@ def get_tasks():
 
 @task_bp.route("/v1/task", methods=["POST"])
 def create_task():
+    global last_task_id
     try:
         # data validation
         task_data = CreateTask(**request.json)
 
-        # insert new task into tasks_list
-        if tasks_list:
-            task_id = tasks_list[-1]["id"] + 1  # id is auto increment
-        else:
-            task_id = 1  # the first task id
+        # insert a new task into task list
+        last_task_id += 1
+        task_id = last_task_id
         new_task = {
             "id": task_id,
             "name": task_data.name,
