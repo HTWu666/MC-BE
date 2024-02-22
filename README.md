@@ -45,14 +45,20 @@ This project provides Swagger documentation for easy exploration and testing of 
 
 ### Accessing Swagger Documentation
 
-To access the Swagger documentation, simply navigate to http://localhost:<your_export_port>/apidocs in your web browser.
+To access the Swagger documentation, simply navigate to the following url in your web browser.
+
+```
+http://localhost:<your_export_port>/apidocs
+```
 
 # Unit Test Result
 
 The project has a comprehensive suite of unit tests consisting of 24 items (Figure 1), achieving a test coverage of 99% (Figure 2).
 
 ![pytest-1](https://github.com/HTWu666/MC-BE/assets/126232123/205ae4a1-cf9f-4bdd-8449-353f525fe1d8)
+
 Figure 1
 
 ![pytest-2](https://github.com/HTWu666/MC-BE/assets/126232123/aa191849-de3f-4ca3-870d-56b81812b613)
+
 Figure2
