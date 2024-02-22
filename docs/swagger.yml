@@ -1,0 +1,211 @@
+swagger: '2.0'
+info:
+  title: Task API
+  description: API for managing tasks.
+  version: '1.0.0'
+host: 'localhost:5000'
+basePath: '/'
+schemes:
+  - http
+paths:
+  /tasks:
+    get:
+      tags:
+        - name: Task
+      summary: 'Fetches all tasks'
+      description: 'Returns a list of all tasks'
+      responses:
+        200:
+          description: 'A list of tasks'
+          schema:
+            type: 'object'
+            properties:
+              result:
+                type: 'array'
+                items:
+                  $ref: '#/definitions/Task'
+        500:
+          description: 'Error message'
+          schema:
+            $ref: '#/definitions/Error'
+  /task:
+    post:
+      tags:
+        - name: Task
+      summary: 'Creates a new task'
+      description: 'This endpoint creates a new task with the task name.'
+      parameters:
+        - in: 'body'
+          name: 'body'
+          description: 'Task object that needs to be added'
+          required: true
+          schema:
+            CreateTask:
+            type: object
+            required:
+              - name
+            properties:
+              name:
+                type: string
+                example: 買晚餐
+      responses:
+        201:
+          description: 'Task created successfully'
+          schema:
+            type: 'object'
+            properties:
+              result:
+                type: 'object'
+                $ref: '#/definitions/Task'
+        400:
+          description: 'Invalid input'
+          schema:
+            type: 'object'
+            $ref: '#/definitions/ValidationError'
+        500:
+          description: 'Unexpected error'
+          schema:
+            type: 'object'
+            $ref: '#/definitions/Error'
+  /task/{id}:
+    put:
+      tags:
+        - name: Task
+      summary: Updates an existing task
+      description: Updates an existing task based on the provided ID and validated input data, then returns the updated task in JSON format.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          description: The ID of the task to be updated.
+        - name: body
+          in: body
+          description: 'Updated task object'
+          required: true
+          schema:
+            type: object
+            required:
+              - id
+              - name
+              - status
+            properties:
+              id:
+                type: integer
+                description: The ID of the task to match with URL.
+                example: 1
+              name:
+                type: string
+                description: The new name of the task.
+                example: '買早餐'
+              status:
+                type: boolean
+                description: The new status of the task.
+                example: 1
+      responses:
+        200:
+          description: Task updated successfully.
+          schema:
+            type: object
+            properties:
+              result:
+                $ref: '#/definitions/Task'
+        400:
+          description: |
+            Bad request. Possible reasons:
+
+            - ID in URL does not match ID in request body.
+
+            - Task not found.
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+                example: Task with ID 5 does not exist.
+        404:
+          description: id is not a postive integer would get 404 not found
+          schema:
+            $ref: '#/definitions/404NotFound'
+        500:
+          description: Unexpected error
+          schema:
+            $ref: '#/definitions/Error'
+    delete:
+      tags:
+        - name: Task
+      summary: Deletes a task
+      description: Deletes a task identified by its ID.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          type: integer
+          description: The ID of the task to be deleted.
+      responses:
+        200:
+          description: Task deleted successfully.
+          schema:
+            type: object
+            properties:
+              message:
+                type: string
+                example: 'Task #123 has been deleted'
+        400:
+          description: |
+            Bad request. Possible reasons:
+
+            - Validation error.
+
+            - Task not found.
+          schema:
+            type: object
+            properties:
+              errors:
+                type: string
+                example: Task with ID 5 does not exist.
+        404:
+          description: id is not a postive integer would get 404 not found
+          schema:
+            $ref: '#/definitions/404NotFound'
+        500:
+          description: Unexpected error.
+          schema:
+            $ref: '#/definitions/Error'
+definitions:
+  Task:
+    type: 'object'
+    properties:
+      id:
+        type: 'integer'
+        example: 1
+      name:
+        type: 'string'
+        example: '買晚餐'
+      status:
+        type: 'boolean'
+        example: False
+  ValidationError:
+    type: 'object'
+    properties:
+      errors:
+        type: 'string'
+        example: 'String should have at least 1 character'
+  TaskNotFoundException:
+    type: 'object'
+    properties:
+      errors:
+        type: 'string'
+        example: 'Task with ID 5 does not exist.'
+  404NotFound:
+    type: 'object'
+    properties:
+      errors:
+        type: 'string'
+        example: '404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.'
+  Error:
+    type: 'object'
+    properties:
+      errors:
+        type: 'string'
+        example: 'An error occurred'

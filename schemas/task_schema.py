@@ -2,6 +2,13 @@ from pydantic import BaseModel, Field
 
 
 class CreateTask(BaseModel):
+    """
+    Represents the schema for creating a new task.
+
+    Attributes:
+        name (str): The name of the task.
+    """
+
     name: str = Field(
         ...,
         min_length=1,
@@ -16,6 +23,15 @@ class CreateTask(BaseModel):
 
 
 class UpdateTask(BaseModel):
+    """
+    Represents the schema for updating an existing task.
+
+    Attributes:
+        id (int): The ID of the task to be updated.
+        name (str): The new name of the task.
+        status (bool): The new status of the task.
+    """
+
     id: int = Field(
         ...,
         gt=0,

@@ -4,6 +4,10 @@ from pydantic import ValidationError
 
 
 def validate_input(validation_model):
+    """
+    Decorator function for validating input data using a Pydantic model.
+    """
+
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
