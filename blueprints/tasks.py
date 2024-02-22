@@ -1,83 +1,65 @@
-from flask import Blueprint, jsonify, request
-from pydantic import ValidationError
+from flask import Blueprint, jsonify
 from schemas.task_schema import CreateTask, UpdateTask
-from utils.search import binary_search
+from models.tasks import Task
+from exceptions.tasks import TaskNotFoundException
+from utils.validation import validate_input
 
+# Create a Flask Blueprint
 task_bp = Blueprint("task_bp", __name__)
-
-# mock a table in database
-tasks_list = []
-last_task_id = 0  # recording the last task id
 
 
 @task_bp.route("/v1/tasks")
 def get_tasks():
     try:
-        # get all tasks in tasks_list
-        tasks = tasks_list
+        # get all tasks in tasks list
+        tasks_list = Task.get_all()
 
-        return jsonify({"result": tasks}), 200
+        return jsonify({"result": tasks_list}), 200
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"errors": str(e)}), 500
 
 
 @task_bp.route("/v1/task", methods=["POST"])
-def create_task():
-    global last_task_id
+@validate_input(CreateTask)
+def create_task(validated_data):
     try:
-        # data validation
-        task_data = CreateTask(**request.json)
-
-        # insert a new task into task list
-        last_task_id += 1
-        task_id = last_task_id
-        new_task = {
-            "id": task_id,
-            "name": task_data.name,
-            "status": 0,  # status is false by default
-        }
-        tasks_list.append(new_task)
+        # insert a new task into tasks list
+        new_task = Task.create(name=validated_data.name)
 
         return jsonify({"result": new_task}), 201
-    except ValidationError as e:
-        return jsonify({"errors": e.errors()[0]["msg"]}), 400
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"errors": str(e)}), 500
 
 
 @task_bp.route("/v1/task/<int:id>", methods=["PUT"])
-def update_task(id):
+@validate_input(UpdateTask)
+def update_task(id, validated_data):
     try:
         # data validation
-        task_data = UpdateTask(**request.json)
-        if id != task_data.id:
+        if id != validated_data.id:
             return (
                 jsonify({"errors": "ID in URL does not match ID in request body."}),
                 400,
             )
 
-        # find the match task and update it
-        task_index = binary_search(tasks_list, id)
-        if task_index == -1:
-            return jsonify({"errors": "The updated task doesn't exist."}), 400
-        tasks_list[task_index] = task_data.model_dump()
+        # update task
+        updated_task = Task.update(id, validated_data.name, validated_data.status)
 
-        return jsonify({"result": task_data.model_dump()}), 200
-    except ValidationError as e:
-        return jsonify({"errors": e.errors()[0]["msg"]}), 400
+        return jsonify({"result": updated_task}), 200
+    except TaskNotFoundException as e:
+        return jsonify({"errors": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"errors": str(e)}), 500
 
 
 @task_bp.route("/v1/task/<int:id>", methods=["DELETE"])
 def delete_task(id):
     try:
-        # find the match task and delete it
-        task_index = binary_search(tasks_list, id)
-        if task_index == -1:
-            return jsonify({"errors": "The deleted task doesn't exist."}), 400
-        del tasks_list[task_index]
+        # delete task
+        Task.delete(id)
 
         return jsonify({"message": f"Task #{id} has been deleted"}), 200
+    except TaskNotFoundException as e:
+        return jsonify({"errors": str(e)}), 400
     except Exception as e:
-        return jsonify({"error": str(e)}), 500
+        return jsonify({"errors": str(e)}), 500

@@ -1,6 +1,6 @@
 import pytest
 from app import app
-from blueprints.tasks import tasks_list
+from models.tasks import Task
 
 
 @pytest.fixture
@@ -12,7 +12,7 @@ def client():
 
 def test_get_tasks(client):
     """Test successfully getting the task list"""
-    tasks_list.append({"id": 1, "name": "Test Task", "status": 0})
+    Task.tasks_list.append({"id": 1, "name": "Test Task", "status": 0})
 
     response = client.get("/api/v1/tasks")
 
@@ -20,5 +20,5 @@ def test_get_tasks(client):
 
     json_data = response.get_json()
     assert "result" in json_data
-    assert len(json_data["result"]) == len(tasks_list)
+    assert len(json_data["result"]) == len(Task.tasks_list)
     assert json_data["result"][0]["name"] == "Test Task"

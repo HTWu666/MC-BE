@@ -1,7 +1,7 @@
 import pytest
 from json import dumps
 from app import app
-from blueprints.tasks import tasks_list
+from models.tasks import Task
 
 
 @pytest.fixture
@@ -9,7 +9,7 @@ def client():
     app.config["TESTING"] = True
     with app.test_client() as client:
         yield client
-    tasks_list.clear()
+        Task.tasks_list.clear()
 
 
 def test_create_task_success(client):
@@ -23,7 +23,9 @@ def test_create_task_success(client):
     json_data_first = response_first.get_json()
     assert "result" in json_data_first
     assert json_data_first["result"]["name"] == "First Test Task"
-    assert json_data_first["result"]["status"] == False
+    assert (
+        json_data_first["result"]["status"] == False
+    )  # status is incomplete by default
     assert json_data_first["result"]["id"] == 1
 
     # create the second task to check that id is auto increment
@@ -35,7 +37,9 @@ def test_create_task_success(client):
     json_data_second = response_second.get_json()
     assert "result" in json_data_second
     assert json_data_second["result"]["name"] == "Second Test Task"
-    assert json_data_second["result"]["status"] == False
+    assert (
+        json_data_second["result"]["status"] == False
+    )  # status is incomplete by default
     assert json_data_second["result"]["id"] == 2
 
 
@@ -44,7 +48,7 @@ def test_create_task_success(client):
     [
         ({}),  # test the name field not exist
         ({"name": ""}),  # test the name is null
-        ({"name": "a" * 51}),  # test the length of name exceed 50 character
+        ({"name": "a" * 51}),  # test the length of name exceed upper limit
     ],
 )
 def test_create_task_name_validation(client, payload):
