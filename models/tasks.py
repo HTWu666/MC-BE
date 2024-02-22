@@ -32,9 +32,9 @@ class Task:
         - delete(cls, task_id: int) -> bool: Deletes a task.
     """
 
-    # Mock the collection in database
+    # Mock the database
     task = Dict[str, str]
-    tasks_dict: Dict[int, task] = {}
+    tasks_dict: Dict[int, task] = {}  # store data in hash table
     last_task_id: int = 0  # For auto increment
 
     @classmethod
