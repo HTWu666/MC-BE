@@ -34,7 +34,25 @@ docker build -t <docker_image_name> .
 After building the image, run the container in detached mode with port forwarding. This allows you to access the application via the specified port on your local machine. Use the command:
 
 ```
-docker run -d -p <your-expose-port>:5000 <your-docker-image-name>
+docker run -d -p <your_expose_port>:5000 <your_docker_image_name>
 ```
 
-Now, you should be able to access the application by navigating to http://localhost:your-expose-port in your web browser.
+Now, you should be able to access the application by navigating to http://localhost:<your_export_port> in your web browser.
+
+# Swagger API Documentation
+
+This project provides Swagger documentation for easy exploration and testing of the API endpoints. Swagger is a powerful tool for visualizing and interacting with APIs.
+
+### Accessing Swagger Documentation
+
+To access the Swagger documentation, simply navigate to http://localhost:<your_export_port>/apidocs in your web browser.
+
+# Unit Test Result
+
+The project has a comprehensive suite of unit tests consisting of 24 items (Figure 1), achieving a test coverage of 99% (Figure 2).
+
+![pytest-1](https://github.com/HTWu666/MC-BE/assets/126232123/205ae4a1-cf9f-4bdd-8449-353f525fe1d8)
+Figure 1
+
+![pytest-2](https://github.com/HTWu666/MC-BE/assets/126232123/aa191849-de3f-4ca3-870d-56b81812b613)
+Figure2
