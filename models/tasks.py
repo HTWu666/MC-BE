@@ -2,14 +2,27 @@ from typing import List, TypedDict, Dict
 from exceptions.tasks import TaskNotFoundException
 
 
-class TaskDict(TypedDict):
+class TaskInTaskDict(TypedDict):
     """
-    Represents the structure of a task dictionary in tasks list.
+    Represents the structure of a task within the tasks dictionary.
 
     Attributes:
-        - id (int): The unique identifier of the task.
-        - name (str): The name of the task.
-        - status (bool): The status of the task.
+        name (str): The name of the task.
+        status (bool): The current status of the task, where False indicates incomplete.
+    """
+
+    name: str
+    status: bool
+
+
+class TaskInResponse(TypedDict):
+    """
+    Represents the structure of a task used in API responses.
+
+    Attributes:
+        id (int): The unique identifier for the task.
+        name (str): The name of the task.
+        status (bool): The current status of the task, where False indicates incomplete.
     """
 
     id: int
@@ -19,71 +32,71 @@ class TaskDict(TypedDict):
 
 class Task:
     """
-    Represents a task model with basic CRUD operations.
+    A model representing a task, providing basic CRUD (Create, Read, Update, Delete) operations.
 
     Attributes:
-        - tasks_list (List[TaskDict]): A list containing dictionaries representing tasks.
-        - last_task_id (int): The last ID used for auto-incrementing new task id.
+        tasks_dict (Dict[int, TaskInTaskDict]): A dictionary acting as the storage for tasks, keyed by task ID.
+        last_task_id (int): Tracks the last used task ID to ensure unique identifiers for new tasks.
 
     Methods:
-        - get_all(cls) -> List[TaskDict]: Retrieves all tasks from the tasks list.
-        - create(cls, name: str, status: bool = False) -> TaskDict: Inserts a new task.
-        - update(cls, task_id: int, name: str, status: bool) -> TaskDict: Updates an existing task.
-        - delete(cls, task_id: int) -> bool: Deletes a task.
+        get_all: Retrieves a list of all tasks in the mock storage.
+        create: Inserts a new task into the mock storage with a unique ID.
+        update: Updates the details of an existing task identified by its ID.
+        delete: Removes a task from the mock storage by its ID.
     """
 
     # Mock the database
-    task = Dict[str, str]
-    tasks_dict: Dict[int, task] = {}  # store data in hash table
+    tasks_dict: Dict[int, TaskInTaskDict] = {}  # store data in hash table
     last_task_id: int = 0  # For auto increment
 
     @classmethod
-    def get_all(cls) -> List[TaskDict]:
+    def get_all(cls) -> List[TaskInResponse]:
         """
-        Retrieves all tasks from the list.
+        Retrieves all tasks from the mock storage.
 
         Returns:
-            - List[TaskDict]: A list of all task dictionaries.
+            A list of dictionaries, each representing a task with its ID, name, and status.
         """
         tasks_list = []
-        for k, v in cls.tasks_dict.items():
-            tasks_list.append({"id": k, "name": v["name"], "status": v["status"]})
+        for task_id, task in cls.tasks_dict.items():
+            tasks_list.append(
+                {"id": task_id, "name": task["name"], "status": task["status"]}
+            )
 
         return tasks_list
 
     @classmethod
-    def create(cls, name: str, status: bool = False) -> TaskDict:
+    def create(cls, name: str) -> TaskInResponse:
         """
-        Inserts a new task into the tasks list with an auto-incremented ID.
+        Inserts a new task with an auto-incremented ID into the mock storage.
 
         Parameters:
-            - name (str): The name of the task.
-            - status (bool): The status of the task, False by default.
+            name (str): The name of the new task.
 
         Returns:
-            - TaskDict: The created task dictionary.
+            A dictionary representing the newly created task, including its ID, name, and status.
         """
         cls.last_task_id += 1
-        cls.tasks_dict[cls.last_task_id] = {"name": name, "status": status}
-        new_task = {"id": cls.last_task_id, "name": name, "status": status}
+        cls.tasks_dict[cls.last_task_id] = {"name": name, "status": False}
+        new_task = {"id": cls.last_task_id, "name": name, "status": False}
 
         return new_task
 
     @classmethod
-    def update(cls, task_id: int, name: str, status: bool) -> TaskDict:
+    def update(cls, task_id: int, name: str, status: bool) -> TaskInResponse:
         """
-        Updates a task identified by its ID.
+        Updates an existing task's details in the mock storage.
 
         Parameters:
-            - task_id (int): The ID of the task to update.
-            - name (str): The new name of the task.
-            - status (bool): The new status of the task.
+            task_id (int): The ID of the task to update.
+            name (str): The new name for the task.
+            status (bool): The new status for the task.
 
         Returns:
-            - TaskDict: The updated task dictionary.
+            A dictionary representing the updated task, including its ID, name, and status.
 
         Raises:
-            - TaskNotFoundException: If no task with the specified ID exists.
+            TaskNotFoundException: If no task with the specified ID exists in the mock storage.
         """
         if task_id not in cls.tasks_dict:
             raise TaskNotFoundException(f"Task with ID {task_id} does not exist.")
@@ -95,16 +108,16 @@ class Task:
     @classmethod
     def delete(cls, task_id: int) -> bool:
         """
-        Deletes a task identified by its ID.
+        Removes a task from the mock storage by its ID.
 
         Parameters:
-            - task_id (int): The ID of the task to delete.
+            task_id (int): The ID of the task to delete.
 
         Returns:
-            - bool: True if the task was successfully deleted.
+            True if the task was successfully deleted, otherwise raises an exception.
 
         Raises:
-            - TaskNotFoundException: If no task with the specified ID exists.
+            TaskNotFoundException: If no task with the specified ID exists in the mock storage.
         """
         if task_id not in cls.tasks_dict:
             raise TaskNotFoundException(f"Task with ID {task_id} does not exist.")

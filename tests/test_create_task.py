@@ -4,6 +4,8 @@ from json import dumps
 from app import app
 from models.tasks import Task
 
+API_VERSION = "/api/v1"
+
 
 @pytest.fixture
 def client():
@@ -18,7 +20,9 @@ def test_create_task_success(client):
     # create the first task
     data_first_task = {"name": "First Test Task", "status": False}
     response_first = client.post(
-        "/task", data=dumps(data_first_task), content_type="application/json"
+        f"{API_VERSION}/task",
+        data=dumps(data_first_task),
+        content_type="application/json",
     )
     assert response_first.status_code == 201
     json_data_first = response_first.get_json()
@@ -32,7 +36,9 @@ def test_create_task_success(client):
     # create the second task to check that id is auto increment
     data_second_task = {"name": "Second Test Task", "status": True}
     response_second = client.post(
-        "/task", data=dumps(data_second_task), content_type="application/json"
+        f"{API_VERSION}/task",
+        data=dumps(data_second_task),
+        content_type="application/json",
     )
     assert response_second.status_code == 201
     json_data_second = response_second.get_json()
@@ -55,7 +61,7 @@ def test_create_task_success(client):
 def test_create_task_name_validation(client, payload):
     """Test boundary conditions for the name field"""
     response = client.post(
-        "/task", data=dumps(payload), content_type="application/json"
+        f"{API_VERSION}/task", data=dumps(payload), content_type="application/json"
     )
     assert (
         response.status_code == 400
@@ -68,7 +74,7 @@ def test_create_task_unexpected_error(client):
     """Test creating a task encountering unexpected error"""
     with patch("models.tasks.Task.create") as mock_create:
         mock_create.side_effect = Exception("Unexpected error")
-        response = client.post("/task", json={"name": "Sample Task"})
+        response = client.post(f"{API_VERSION}/task", json={"name": "Sample Task"})
 
         assert (
             response.status_code == 500

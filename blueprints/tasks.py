@@ -10,7 +10,7 @@ from utils.validation import validate_input
 task_bp = Blueprint("task_bp", __name__)
 
 
-@task_bp.route("/tasks")
+@task_bp.route("/v1/tasks")
 def get_tasks() -> Tuple[Response, int]:
     """
     Fetches and returns all tasks in JSON format.
@@ -27,9 +27,9 @@ def get_tasks() -> Tuple[Response, int]:
         return jsonify({"errors": str(e)}), 500
 
 
-@task_bp.route("/task", methods=["POST"])
+@task_bp.route("/v1/task", methods=["POST"])
 @validate_input(CreateTask)
-def create_task(validated_data: CreateTask) -> Tuple[jsonify, int]:
+def create_task(validated_data: CreateTask) -> Tuple[Response, int]:
     """
     Creates a new task based on validated input data and returns it in JSON format.
 
@@ -50,9 +50,9 @@ def create_task(validated_data: CreateTask) -> Tuple[jsonify, int]:
         return jsonify({"errors": str(e)}), 500
 
 
-@task_bp.route("/task/<int:id>", methods=["PUT"])
+@task_bp.route("/v1/task/<int:id>", methods=["PUT"])
 @validate_input(UpdateTask)
-def update_task(id: int, validated_data: UpdateTask) -> Tuple[jsonify, int]:
+def update_task(id: int, validated_data: UpdateTask) -> Tuple[Response, int]:
     """
     Updates an existing task based on the provided ID and validated input data, then returns the updated task in JSON format.
 
@@ -87,8 +87,8 @@ def update_task(id: int, validated_data: UpdateTask) -> Tuple[jsonify, int]:
         return jsonify({"errors": str(e)}), 500
 
 
-@task_bp.route("/task/<int:id>", methods=["DELETE"])
-def delete_task(id: int) -> Tuple[jsonify, int]:
+@task_bp.route("/v1/task/<int:id>", methods=["DELETE"])
+def delete_task(id: int) -> Tuple[Response, int]:
     """
     Deletes a task identified by its ID.
 

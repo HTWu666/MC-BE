@@ -4,7 +4,7 @@ info:
   description: API for managing tasks.
   version: '1.0.0'
 host: 'localhost:5000'
-basePath: '/'
+basePath: '/api/v1'
 schemes:
   - http
 paths:
@@ -40,7 +40,6 @@ paths:
           description: 'Task object that needs to be added'
           required: true
           schema:
-            CreateTask:
             type: object
             required:
               - name
@@ -174,6 +173,7 @@ paths:
             $ref: '#/definitions/Error'
 definitions:
   Task:
+    description: 'One task object in response'
     type: 'object'
     properties:
       id:
@@ -186,26 +186,30 @@ definitions:
         type: 'boolean'
         example: False
   ValidationError:
+    description: 'Represents an error for invalid input, with a response status code of 400.'
     type: 'object'
     properties:
       errors:
         type: 'string'
-        example: 'String should have at least 1 character'
+        example: 'String should have at least 1 character.'
   TaskNotFoundException:
+    description: 'Error returned when a specified task ID does not exist, with a response status code of 400.'
     type: 'object'
     properties:
       errors:
         type: 'string'
         example: 'Task with ID 5 does not exist.'
   404NotFound:
+    description: 'Error returned when the requested URL is not found on the server, with a response status code of 404.'
     type: 'object'
     properties:
       errors:
         type: 'string'
         example: '404 Not Found: The requested URL was not found on the server. If you entered the URL manually please check your spelling and try again.'
   Error:
+    descripion: 'Model for unexpected error handling, with a response status code of 500.'
     type: 'object'
     properties:
       errors:
         type: 'string'
-        example: 'An error occurred'
+        example: 'Internal Server Error'

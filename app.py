@@ -6,13 +6,14 @@ from blueprints.tasks import task_bp
 app = Flask(__name__)
 swagger = Swagger(app, template_file="docs/swagger.yml")
 
-app.register_blueprint(task_bp)
+app.register_blueprint(task_bp, url_prefix="/api")
 
 
+# page not found
 @app.errorhandler(404)
 def page_not_found(error) -> Tuple[Response, int]:
     """
-    Handle 404 errors by returning a custom JSON response.
+    Handle 404 errors by returning an error response.
 
     Parameters:
         - error: The error object provided by Flask.
@@ -25,14 +26,17 @@ def page_not_found(error) -> Tuple[Response, int]:
 
 @app.route("/test/error")
 def test_error_handler():
+    """
+    Test endpoint to demonstrate global exception handling by raising an exception.
+    """
     raise Exception("Test exception for error handling.")
 
 
 # Global exception handler
 @app.errorhandler(Exception)
-def handle_exception(error) -> Tuple[jsonify, int]:
+def handle_exception(error) -> Tuple[Response, int]:
     """
-    Handle general exceptions by returning a custom JSON response.
+    Handle general exceptions by returning an error response.
 
     Parameters:
         - error: The error object provided by Flask.
@@ -40,7 +44,7 @@ def handle_exception(error) -> Tuple[jsonify, int]:
     Returns:
         - On unexpected errors, returns a JSON object with an error message and a 500 status code.
     """
-    return jsonify({"message": "An error occurred", "error": str(error)}), 500
+    return jsonify({"errors": str(error)}), 500
 
 
 # Run the Flask application

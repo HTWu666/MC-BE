@@ -19,5 +19,4 @@ def test_global_exception_handler(client):
     response = client.get("/test/error")
     assert response.status_code == 500
     json_data = response.get_json()
-    assert json_data["message"] == "An error occurred"
-    assert "Test exception for error handling." in json_data["error"]
+    assert "Test exception for error handling." in json_data["errors"]
