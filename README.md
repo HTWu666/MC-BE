@@ -55,29 +55,7 @@ http://localhost:<your_expose_port>/apidocs
 
 ## Demo
 
-### Create a new task
-
-This endpoint allows for the creation of a new task. By specifying task name in the request body, users can add new tasks to the system.
-
-https://github.com/HTWu666/MC-BE/assets/126232123/da063401-2a45-42c6-91bb-078b4ce25132
-
-### Update a task
-
-This functionality provides the ability to update an existing task's information. It supports modifications to both the task's name and its completion status.
-
-https://github.com/HTWu666/MC-BE/assets/126232123/e3f7aee6-4055-48ac-966a-303eded47cdf
-
-### Delete a task
-
-Use this endpoint to remove a task from the system. By specifying a task ID, users can delete tasks that are no longer needed.
-
-https://github.com/HTWu666/MC-BE/assets/126232123/1045ba79-edee-4b50-97a7-49d3bcd5002c
-
-### Get all tasks
-
-This endpoint lists all tasks currently stored within the system. It provides a quick overview of all tasks, including their IDs, names, and statuses.
-
-https://github.com/HTWu666/MC-BE/assets/126232123/3dc3ac65-ec7b-4ebb-a5b6-7bd34a9616f1
+https://github.com/HTWu666/MC-BE/assets/126232123/f9f91e71-0177-4f9c-8aa3-ec21b2cb70d5
 
 # Unit Test Result
 
@@ -104,6 +82,8 @@ This command runs all the unit tests in the project. After executing the tests, 
 ```
 coverage report --show-missing
 ```
+
+https://github.com/HTWu666/MC-BE/assets/126232123/c24abd00-395f-49b8-9e72-63a24ada0574
 
 ## Test Results
 
