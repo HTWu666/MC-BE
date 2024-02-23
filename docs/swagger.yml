@@ -177,14 +177,17 @@ definitions:
     type: 'object'
     properties:
       id:
+        description: 'Task ID'
         type: 'integer'
         example: 1
       name:
+        description: 'Task name'
         type: 'string'
         example: '買晚餐'
       status:
+        description: 'Task status'
         type: 'boolean'
-        example: False
+        example: 0
   ValidationError:
     description: 'Represents an error for invalid input, with a response status code of 400.'
     type: 'object'
