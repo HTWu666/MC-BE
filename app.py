@@ -17,46 +17,29 @@ logger.addHandler(handler)
 
 
 @app.before_request
-def before_request():
+def before_request() -> None:
     """
     Log request details before processing it.
-
-    Captures and logs the HTTP method, path, headers, and query parameters
-    of the incoming request. Also, records the start time for calculating
-    the request's response time.
     """
     request.start_time = time.time()
-    headers = dict(request.headers)
-    query_params = request.args
     logger.info(
         "Request: %s %s, Headers: %s, Query Params: %s",
         request.method,
         request.path,
-        headers,
-        query_params,
+        dict(request.headers),
+        request.args,
     )
 
 
 @app.after_request
-def after_request(response):
+def after_request(response: Response) -> Response:
     """
     Log response details after processing the request.
-
-    Logs the HTTP status code, request path, response time (in milliseconds),
-    user-agent, and the IP address of the client. If the response time cannot
-    be calculated, logs 'Unknown' as the response time.
-
-    Parameters:
-    - response: The Flask response object to be returned to the client.
-
-    Returns:
-    - The unmodified response object, to comply with Flask's after_request requirements.
     """
+    response_time_str = "Unknown"
     if hasattr(request, "start_time"):
         response_time = (time.time() - request.start_time) * 1000
         response_time_str = f"{response_time:.2f} ms"
-    else:
-        response_time_str = "Unknown"
 
     logger.info(
         "Response: %s, Route: %s, Response Time: %s, User-Agent: %s, IP: %s",

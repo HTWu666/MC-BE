@@ -55,10 +55,10 @@ http://localhost:<your_export_port>/apidocs
 
 The project has a comprehensive suite of unit tests consisting of 24 items (Figure 1), achieving a test coverage of 99% (Figure 2).
 
-![pytest-1](https://github.com/HTWu666/MC-BE/assets/126232123/e94a3755-72e2-4f50-87b0-888023bd06ed)
+![pytest-1](https://github.com/HTWu666/MC-BE/assets/126232123/6158f84a-0647-47fe-9646-a692bce84a05)
 
 Figure 1
 
-![pytest-2](https://github.com/HTWu666/MC-BE/assets/126232123/262591f3-9d9c-4e7c-919b-db8edb3f09e4)
+![pytest-2](https://github.com/HTWu666/MC-BE/assets/126232123/8de8fb52-5ec0-4650-957b-3b324f47f600)
 
 Figure2
