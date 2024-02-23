@@ -18,7 +18,7 @@ Follow these simple steps to get your development environment running:
 First, clone the project repository to your local machine using Git. Open a terminal and run the following command:
 
 ```
-git clone https://github.com/HTWu666/MC-BE.git
+git clone https://github.com/HTWu666/MC-BE.git <new_folder_name>
 ```
 
 ### 2. Build the Docker image
@@ -26,6 +26,7 @@ git clone https://github.com/HTWu666/MC-BE.git
 Navigate to the project directory where the Dockerfile is located and build the Docker image using the following command:
 
 ```
+cd <new_folder_name>
 docker build -t <docker_image_name> .
 ```
 
