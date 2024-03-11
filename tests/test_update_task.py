@@ -3,7 +3,7 @@ import pytest
 from app import app
 from models.tasks import Task
 
-API_VERSION = "/api/v1"
+API_VERSION = "v1"
 
 
 @pytest.fixture
@@ -17,7 +17,8 @@ def test_update_task_success(client):
     """Test successfully updating a task"""
     Task.tasks_dict[1] = {"name": "Original Task", "status": True}
     response = client.put(
-        f"{API_VERSION}/task/1", json={"id": 1, "name": "Updated Task", "status": False}
+        f"/api/{API_VERSION}/task/1",
+        json={"id": 1, "name": "Updated Task", "status": False},
     )
     assert response.status_code == 200
     assert Task.tasks_dict[1]["name"] == "Updated Task"
@@ -27,7 +28,8 @@ def test_update_task_id_mismatch(client):
     """Test when id in query string is different from id in request body"""
     Task.tasks_dict[1] = {"name": "Original Task", "status": True}
     response = client.put(
-        f"{API_VERSION}/task/2", json={"id": 1, "name": "Updated Task", "status": False}
+        f"/api/{API_VERSION}/task/2",
+        json={"id": 1, "name": "Updated Task", "status": False},
     )
     assert response.status_code == 400
     assert (
@@ -39,7 +41,7 @@ def test_update_task_not_exist(client):
     """Test updating a non-existent task"""
     task_id = 1
     response = client.put(
-        f"{API_VERSION}/task/1",
+        f"/api/{API_VERSION}/task/1",
         json={"id": task_id, "name": "Nonexistent Task", "status": False},
     )
     assert response.status_code == 400
@@ -74,7 +76,7 @@ def test_update_task_validation_errors(client, data, expected_status):
         Task.tasks_dict.clear()
         Task.tasks_dict[1] = {"name": "Original Task", "status": True}
 
-    response = client.put(f"{API_VERSION}/task/{data['id']}", json=data)
+    response = client.put(f"/api/{API_VERSION}/task/{data['id']}", json=data)
     assert (
         response.status_code == expected_status
     ), f"Expected status code {expected_status} but got {response.status_code}"
@@ -87,7 +89,7 @@ def test_update_task_unexpected_error(client):
     with patch("models.tasks.Task.update") as mock_update:
         mock_update.side_effect = Exception("Unexpected error")
         response = client.put(
-            f"{API_VERSION}/task/1",
+            f"/api/{API_VERSION}/task/1",
             json={"id": 1, "name": "Updated Task", "status": True},
         )
 
@@ -97,3 +99,24 @@ def test_update_task_unexpected_error(client):
 
         data = response.get_json()
         assert "errors" in data, "Expected the response to contain an 'errors' key"
+
+
+def test_update_task_with_non_json_content_type(client):
+    """Test updating a task with a non-JSON content type results in an appropriate response"""
+    Task.tasks_dict[1] = {"name": "Task Before Update", "status": True}
+
+    response = client.put(
+        f"/api/{API_VERSION}/task/1",
+        data="name=Updated Task&status=False",
+        content_type="application/x-www-form-urlencoded",
+    )
+
+    assert (
+        response.status_code == 400
+    ), "Expected a 400 status code for non-JSON content type"
+
+    json_data = response.get_json()
+    assert "errors" in json_data, "Expected 'errors' key in the response"
+    assert (
+        json_data["errors"] == "Invalid or missing JSON"
+    ), "Expected specific error message for non-JSON content"

@@ -36,7 +36,7 @@ docker build -t <docker_image_name> .
 After building the image, run the container in detached mode with port forwarding. This allows you to access the application via the specified port on your local machine. Use the command:
 
 ```
-docker run -d -p <your_expose_port>:5000 <your_docker_image_name>
+docker run -d --env-file .env -p <your_expose_port>:5000 <your_docker_image_name>
 ```
 
 Now, you should be able to access the application by navigating to http://localhost:<your_expose_port> in your web browser.

@@ -1,12 +1,17 @@
 import time
+import os
 from typing import Tuple
 import logging
 from logging.handlers import RotatingFileHandler
+from dotenv import load_dotenv
 from flask import Flask, jsonify, Response, request
 from flasgger import Swagger
 from blueprints.tasks import task_bp
 
+load_dotenv()
+
 app = Flask(__name__)
+
 swagger = Swagger(app, template_file="docs/swagger.yml")
 
 # Configure logging
@@ -93,6 +98,8 @@ def handle_exception(error) -> Tuple[Response, int]:
     """
     return jsonify({"errors": str(error)}), 500
 
+
+app.config["DEBUG"] = os.environ.get("DEBUG", "False").lower() == "true"
 
 # Run the Flask application
 if __name__ == "__main__":

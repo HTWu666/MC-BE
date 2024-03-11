@@ -11,7 +11,7 @@ def validate_input(validation_model):
     def decorator(func):
         @wraps(func)
         def wrapper(*args, **kwargs):
-            if request.json is None:
+            if request.content_type != "application/json":
                 return jsonify({"errors": "Invalid or missing JSON"}), 400
             try:
                 validated_data = validation_model(**request.json)

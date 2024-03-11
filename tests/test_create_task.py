@@ -4,7 +4,7 @@ from json import dumps
 from app import app
 from models.tasks import Task
 
-API_VERSION = "/api/v1"
+API_VERSION = "v1"
 
 
 @pytest.fixture
@@ -20,7 +20,7 @@ def test_create_task_success(client):
     # create the first task
     data_first_task = {"name": "First Test Task", "status": False}
     response_first = client.post(
-        f"{API_VERSION}/task",
+        f"/api/{API_VERSION}/task",
         data=dumps(data_first_task),
         content_type="application/json",
     )
@@ -36,7 +36,7 @@ def test_create_task_success(client):
     # create the second task to check that id is auto increment
     data_second_task = {"name": "Second Test Task", "status": True}
     response_second = client.post(
-        f"{API_VERSION}/task",
+        f"/api/{API_VERSION}/task",
         data=dumps(data_second_task),
         content_type="application/json",
     )
@@ -61,7 +61,7 @@ def test_create_task_success(client):
 def test_create_task_name_validation(client, payload):
     """Test boundary conditions for the name field"""
     response = client.post(
-        f"{API_VERSION}/task", data=dumps(payload), content_type="application/json"
+        f"/api/{API_VERSION}/task", data=dumps(payload), content_type="application/json"
     )
     assert (
         response.status_code == 400
@@ -74,7 +74,7 @@ def test_create_task_unexpected_error(client):
     """Test creating a task encountering unexpected error"""
     with patch("models.tasks.Task.create") as mock_create:
         mock_create.side_effect = Exception("Unexpected error")
-        response = client.post(f"{API_VERSION}/task", json={"name": "Sample Task"})
+        response = client.post(f"/api/{API_VERSION}/task", json={"name": "Sample Task"})
 
         assert (
             response.status_code == 500
@@ -82,3 +82,22 @@ def test_create_task_unexpected_error(client):
 
         data = response.get_json()
         assert "errors" in data, "Expected the response to contain an 'errors' key"
+
+
+def test_create_task_with_non_json_content_type(client):
+    """Test creating a task with non-JSON content type results in a 400 error"""
+    response = client.post(
+        f"/api/{API_VERSION}/task",
+        data="This is not a JSON string",
+        content_type="text/plain",  # invalid content type
+    )
+
+    assert (
+        response.status_code == 400
+    ), "Expected a 400 status code for non-JSON content type"
+
+    json_data = response.get_json()
+    assert "errors" in json_data, "Expected 'errors' key in the response"
+    assert (
+        json_data["errors"] == "Invalid or missing JSON"
+    ), "Expected specific error message for non-JSON content"

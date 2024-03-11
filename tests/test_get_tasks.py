@@ -3,7 +3,7 @@ import pytest
 from app import app
 from models.tasks import Task
 
-API_VERSION = "/api/v1"
+API_VERSION = "v1"
 
 
 @pytest.fixture
@@ -17,7 +17,7 @@ def test_get_tasks(client):
     """Test successfully getting the task list"""
     Task.tasks_dict[1] = {"name": "Test Task", "status": False}
 
-    response = client.get(f"{API_VERSION}/tasks")
+    response = client.get(f"/api/{API_VERSION}/tasks")
 
     assert response.status_code == 200
 
@@ -31,7 +31,7 @@ def test_get_tasks_unexpected_error(client):
     """Test fetching task list encountering unexpected error"""
     with patch("models.tasks.Task.get_all") as mock_get_all:
         mock_get_all.side_effect = Exception("Unexpected error")
-        response = client.get(f"{API_VERSION}/tasks")
+        response = client.get(f"/api/{API_VERSION}/tasks")
 
         assert (
             response.status_code == 500
