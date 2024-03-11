@@ -1,32 +1,24 @@
-# Base image with Python 3.10 Alpine
+# Use the official lightweight Python image with Python 3.10
 FROM python:3.10.0-alpine
 
-# Set working directory
+# Set the working directory in the container to /app
 WORKDIR /app
 
-# Create non-root user
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
+# Install a virtual environment in the container and upgrade pip
+RUN python -m venv /opt/venv && \
+    /opt/venv/bin/pip install --upgrade pip
 
-# Use non-root user
-USER appuser
+# Prepend virtual environment binaries to PATH
+ENV PATH="/opt/venv/bin:$PATH"
 
-# Update PATH for user-level binaries
-ENV PATH="/home/appuser/.local/bin:${PATH}"
+# Copy the current directory contents into the container at /app
+COPY . .
 
-# Upgrade pip and verify version
-RUN pip install --upgrade pip --user && pip --version
+# Install any needed packages specified in requirements.txt
+RUN pip install --no-cache-dir -r requirements.txt
 
-# Copy and own requirements.txt
-COPY --chown=appuser:appgroup requirements.txt /app/
-
-# Install dependencies
-RUN pip install --user -r requirements.txt
-
-# Copy app files and change ownership
-COPY --chown=appuser:appgroup . /app/
-
-# Expose port 5000
+# Make port 5000 available to the world outside this container
 EXPOSE 5000
 
 # Command to run app
-CMD ["python3", "app.py"]
+CMD ["python", "app.py"]
