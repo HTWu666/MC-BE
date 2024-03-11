@@ -1,5 +1,5 @@
 from typing import List, TypedDict, Dict
-from exceptions.tasks import TaskNotFoundException
+from exceptions.TaskNotFoundException import TaskNotFoundException
 
 
 class TaskInTaskDict(TypedDict):

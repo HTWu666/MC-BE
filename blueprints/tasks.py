@@ -2,7 +2,7 @@ from typing import Tuple
 from flask import Blueprint, jsonify, Response
 from schemas.task_schema import CreateTask, UpdateTask
 from models.tasks import Task
-from exceptions.tasks import TaskNotFoundException
+from exceptions.TaskNotFoundException import TaskNotFoundException
 from utils.validation import validate_input
 
 
@@ -82,7 +82,7 @@ def update_task(id: int, validated_data: UpdateTask) -> Tuple[Response, int]:
 
         return jsonify({"result": updated_task}), 200
     except TaskNotFoundException as e:
-        return jsonify({"errors": str(e)}), 400
+        return jsonify({"errors": e.message}), e.error_code
     except Exception as e:
         return jsonify({"errors": str(e)}), 500
 
@@ -108,6 +108,6 @@ def delete_task(id: int) -> Tuple[Response, int]:
 
         return jsonify({"message": f"Task #{id} has been deleted"}), 200
     except TaskNotFoundException as e:
-        return jsonify({"errors": str(e)}), 400
+        return jsonify({"errors": e.message}), e.error_code
     except Exception as e:
         return jsonify({"errors": str(e)}), 500
