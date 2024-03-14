@@ -1,33 +1,6 @@
-from typing import List, TypedDict, Dict
+from typing import List, Dict
 from exceptions.TaskNotFoundException import TaskNotFoundException
-
-
-class TaskInTaskDict(TypedDict):
-    """
-    Represents the structure of a task within the tasks dictionary.
-
-    Attributes:
-        name (str): The name of the task.
-        status (bool): The current status of the task, where False indicates incomplete.
-    """
-
-    name: str
-    status: bool
-
-
-class TaskInResponse(TypedDict):
-    """
-    Represents the structure of a task used in API responses.
-
-    Attributes:
-        id (int): The unique identifier for the task.
-        name (str): The name of the task.
-        status (bool): The current status of the task, where False indicates incomplete.
-    """
-
-    id: int
-    name: str
-    status: bool
+from type_schemas.tasks import TaskInTaskDict, TaskInResponse
 
 
 class Task:
@@ -57,11 +30,10 @@ class Task:
         Returns:
             A list of dictionaries, each representing a task with its ID, name, and status.
         """
-        tasks_list = []
-        for task_id, task in cls.tasks_dict.items():
-            tasks_list.append(
-                {"id": task_id, "name": task["name"], "status": task["status"]}
-            )
+        tasks_list = [
+            {"id": task_id, "name": task["name"], "status": task["status"]}
+            for task_id, task in cls.tasks_dict.items()
+        ]
 
         return tasks_list
 
@@ -106,7 +78,7 @@ class Task:
         return {"id": task_id, "name": name, "status": status}
 
     @classmethod
-    def delete(cls, task_id: int) -> bool:
+    def delete(cls, task_id: int) -> None:
         """
         Removes a task from the mock storage by its ID.
 
@@ -123,5 +95,3 @@ class Task:
             raise TaskNotFoundException(f"Task with ID {task_id} does not exist.")
 
         del cls.tasks_dict[task_id]
-
-        return True

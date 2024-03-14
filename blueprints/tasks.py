@@ -1,7 +1,7 @@
 from typing import Tuple
 from flask import Blueprint, jsonify, Response
 from schemas.task_schema import CreateTask, UpdateTask
-from models.tasks import Task
+from services import tasks as task_service
 from exceptions.TaskNotFoundException import TaskNotFoundException
 from utils.validation import validate_input
 
@@ -20,7 +20,7 @@ def get_tasks() -> Tuple[Response, int]:
         - On unexpected errors, returns a JSON object with an error message and a 500 status code.
     """
     try:
-        tasks_list = Task.get_all()
+        tasks_list = task_service.get_all_tasks()
 
         return jsonify({"result": tasks_list}), 200
     except Exception as e:
@@ -43,7 +43,7 @@ def create_task(validated_data: CreateTask) -> Tuple[Response, int]:
         - On unexpected errors, returns a JSON object with an error message and a 500 status code.
     """
     try:
-        new_task = Task.create(name=validated_data.name)
+        new_task = task_service.create_task(validated_data.name)
 
         return jsonify({"result": new_task}), 201
     except Exception as e:
@@ -78,7 +78,9 @@ def update_task(id: int, validated_data: UpdateTask) -> Tuple[Response, int]:
             )
 
         # update task
-        updated_task = Task.update(id, validated_data.name, validated_data.status)
+        updated_task = task_service.update_task(
+            id, validated_data.name, validated_data.status
+        )
 
         return jsonify({"result": updated_task}), 200
     except TaskNotFoundException as e:
@@ -104,7 +106,7 @@ def delete_task(id: int) -> Tuple[Response, int]:
         - TaskNotFoundException: If no task with the specified ID exists.
     """
     try:
-        Task.delete(id)
+        task_service.delete_task(id)
 
         return jsonify({"message": f"Task #{id} has been deleted"}), 200
     except TaskNotFoundException as e:
